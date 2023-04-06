@@ -28,6 +28,7 @@ import { PropertyInfo, PropertyManager } from './filtering/PropertyManager'
 import { SpeckleType } from './converter/GeometryConverter'
 import { DataTree } from './tree/DataTree'
 import Logger from 'js-logger'
+import { Group, Mesh, MeshBasicMaterial, BufferGeometry, BufferAttribute } from 'three'
 
 export class Viewer extends EventEmitter implements IViewer {
   /** Container and optional stats element */
@@ -383,10 +384,23 @@ export class Viewer extends EventEmitter implements IViewer {
     try {
       if (++this.inProgressOperations === 1)
         (this as EventEmitter).emit(ViewerEvent.Busy, true)
-
       const loader = new ViewerObjectLoader(this, url, token, enableCaching)
       this.loaders[url] = loader
       await loader.load()
+
+      const newObj = new Group()
+      // const newBox = new Box3(new Vector3(1, 1, 1), new Vector3(2, 2, 2))
+      const geometry = new BufferGeometry()
+      const vertices = new Float32Array([
+        -0.2, -0.2, 0.2, 0.2, -0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, -0.2, 0.2, 0.2,
+        -0.2, -0.2, 0.2
+      ])
+      geometry.setAttribute('position', new BufferAttribute(vertices, 3))
+      const material = new MeshBasicMaterial({ color: 0xff0000 })
+      const child = new Mesh(geometry, material)
+      newObj.add(child)
+      newObj.name = 'TopSolidHack'
+      this.speckleRenderer.scene.add(newObj)
     } finally {
       if (--this.inProgressOperations === 0)
         (this as EventEmitter).emit(ViewerEvent.Busy, false)

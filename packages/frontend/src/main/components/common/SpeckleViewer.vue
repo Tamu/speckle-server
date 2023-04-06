@@ -79,6 +79,12 @@ export default {
     this.$eventHub.$on('resize-viewer', () => {
       this.viewer.resize()
       this.viewer.cameraHandler.onWindowResize()
+      for (const obj of this.viewer.speckleRenderer.scene.children) {
+        if (obj.type === 'Group' && obj.name === 'TopSolidHack') {
+          // console.log('scene newObj', obj)
+        }
+        console.log('scene newObj', obj)
+      }
     })
   },
   beforeDestroy() {
