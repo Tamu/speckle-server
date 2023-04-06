@@ -133,7 +133,16 @@ spec:
           - name: DISABLE_FILE_UPLOADS 
             value: "true"
           {{ end }}
-            
+
+          {{- if .Values.server.adminOverrideEnabled }}
+          - name: ADMIN_OVERRIDE_ENABLED
+            value: "true"
+          {{- end }}
+
+          {{- if .Values.server.monitoring.mp.enabled }}
+          - name: ENABLE_MP
+            value: {{ default "true" ( .Values.server.monitoring.mp.enabled | quote) }}
+          {{- end }}
 
           # *** S3 Object Storage ***
           {{- if (or .Values.s3.configMap.enabled .Values.s3.endpoint) }}
